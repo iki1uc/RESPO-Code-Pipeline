@@ -32,3 +32,23 @@ bezeichnet wird.
 
 Der Zyklus folgt der festen Reihenfolge:
 
+4 → 0 → 1 → 2 → 4
+
+
+Dies erzeugt einen **endlosen Real‑Zyklus**, der die Pipeline stabil hält.
+
+---
+
+## 📁 Dateien im Repository
+
+| Datei       | Funktion |
+|-------------|----------|
+| `index.html` | Startseite der Pipeline |
+| `ID.html`    | Identität und Pipeline‑Definition |
+| `README.md`  | Dokumentation |
+
+---
+
+## 📌 Status
+
+Die Pipeline ist aktiv, stabil und bereit für Erweiterungen.
