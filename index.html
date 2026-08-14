@@ -15,9 +15,9 @@ pre{background:#111;border-left:3px solid #6cf;padding:20px;white-space:pre-wrap
 
 <script type="module">
 
-// MONITOR + MENTOR
-import * as MON from "./monitor.html";
-import * as MEN from "./MENTOR.html";
+// MONITOR + MENTOR (NEU: JS statt HTML)
+import { runMonitor } from "./monitor.js";
+import { runMentor } from "./mentor.js";
 
 // Kernmodule
 import { A81CACHE } from "./81cache.js";
@@ -45,7 +45,7 @@ import { P1 } from "./pipelineP1.js";
 import { P2 } from "./pipelineP2.js";
 import { Pe } from "./pipelinePe.js";
 
-// ARG / XARG / SLIDE / WETT (NEU)
+// ARG / XARG / SLIDE / WETT
 function XARG(core){
     return {
         id: "XARG",
