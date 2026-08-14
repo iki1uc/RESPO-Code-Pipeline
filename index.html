@@ -2,39 +2,145 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>RESPO-Code-Pipeline</title>
+<title>RESPO · MASTER · FULL SYSTEM</title>
 
 <style>
-body { background:#000; color:#0f0; font-family:monospace; padding:40px; }
-h1 { color:#6cf; letter-spacing:4px; margin-bottom:30px; }
-.block {
-    background:#111;
-    border:1px solid #333;
-    padding:25px;
-    margin-bottom:30px;
-    border-radius:8px;
-}
-a { color:#0f0; text-decoration:none; font-weight:bold; }
+body{background:#000;color:#0f0;font-family:monospace;padding:40px;}
+h1{color:#6cf;text-align:center;margin-bottom:30px;}
+button{background:#111;color:#0f0;border:1px solid #333;padding:10px 20px;margin:10px;}
+pre{background:#111;border-left:3px solid #6cf;padding:20px;white-space:pre-wrap;}
+.grid{display:flex;gap:20px;flex-wrap:wrap;}
+.block{background:#111;padding:20px;border-radius:6px;flex:1;min-width:300px;}
 </style>
+
+<script type="module">
+
+// MONITOR + MENTOR
+import * as MON from "./monitor.html";
+import * as MEN from "./MENTOR.html";
+
+// Kernmodule
+import { A81CACHE } from "./81cache.js";
+import { NC_CORE } from "./NC_CORE.js";
+import { C81 } from "./81.room";
+
+// Analyse
+import { GEO } from "./81geo.js";
+
+// Operator
+import { Operator9 } from "./9.js";
+
+// 243 Runtime
+import { run243 } from "./243.js";
+
+// RESPO
+import { buildRespo100 } from "./respo100.js";
+import { buildRespo360 } from "./respo360.js";
+import { buildDashboard } from "./respoDashboard.js";
+
+// Pipeline
+import { P4 } from "./pipelineP4.js";
+import { P0 } from "./pipelineP0.js";
+import { P1 } from "./pipelineP1.js";
+import { P2 } from "./pipelineP2.js";
+import { Pe } from "./pipelinePe.js";
+
+// ARG / XARG / SLIDE / WETT (NEU)
+function XARG(core){
+    return {
+        id: "XARG",
+        arg: core.operator9,
+        geo: core.geo,
+        respo: core.respo360,
+        slide: "ACTIVE",
+        wett: "READY",
+        timestamp: Date.now()
+    };
+}
+
+function coreScan(){
+
+    const r100 = buildRespo100();
+    const r360 = buildRespo360();
+    const dash = buildDashboard(r100, r360);
+
+    const c81 = C81.init();
+    const geo = GEO.analyze(c81);
+    const op9 = Operator9.init();
+    const pq243 = run243();
+
+    const nc = NC_CORE.init(
+        c81,
+        r360,
+        pq243,
+        A81CACHE.read(),
+        op9,
+        geo
+    );
+
+    const core = {
+        respo100: r100,
+        respo360: r360,
+        dashboard: dash,
+        c81,
+        geo,
+        operator9: op9,
+        pq243,
+        nc,
+        cache: A81CACHE.read(),
+        xarg: XARG(this),
+        timestamp: Date.now()
+    };
+
+    A81CACHE.write(core);
+    return core;
+}
+
+window.runMaster = () => {
+    const out = coreScan();
+    document.getElementById("out").innerText =
+        JSON.stringify(out, null, 2);
+};
+
+window.runXARG = () => {
+    const out = XARG(coreScan());
+    document.getElementById("out").innerText =
+        JSON.stringify(out, null, 2);
+};
+
+window.runPipeline = (phase) => {
+    const core = coreScan();
+    const out = phase.run(core);
+    document.getElementById("out").innerText =
+        JSON.stringify(out, null, 2);
+};
+
+</script>
+
 </head>
 
 <body>
 
-<h1>RESPO-Code-Pipeline</h1>
+<h1>RESPO · MASTER · FULL SYSTEM</h1>
 
-<div class="block">
-    <p>Willkommen in der RESPO‑Code‑Pipeline.</p>
-    <p>Dieses System verarbeitet Code in fünf Stufen:</p>
-    <p>P4 → P0 → P1 → P2 → Pe</p>
+<div class="grid">
+
+    <div class="block">
+        <button onclick="runMaster()">MASTER starten</button>
+        <button onclick="runXARG()">XARG / ARG / SLIDE / WETT</button>
+    </div>
+
+    <div class="block">
+        <button onclick="runPipeline(P4)">P4 · start</button>
+        <button onclick="runPipeline(P0)">P0 · wake</button>
+        <button onclick="runPipeline(P1)">P1 · melt</button>
+        <button onclick="runPipeline(P2)">P2 · merge</button>
+        <button onclick="runPipeline(Pe)">Pe · finalize</button>
+    </div>
+
 </div>
 
-<div class="block">
-    <p><a href="ID.html">→ Pipeline‑Identität öffnen</a></p>
-</div>
-
-<div class="block">
-    <p><a href="README.md">→ Dokumentation anzeigen</a></p>
-</div>
+<pre id="out">Bereit…</pre>
 
 </body>
 </html>
